@@ -1,0 +1,5 @@
+flask
+flask-socketio
+qrcode[pil]
+eventlet
+python-dotenv
