@@ -4,15 +4,15 @@ class Team(Enum):
     ATTACKER = "attacker"
     DEFENDER = "defender"
 
-class TowerType(Enum):
-    ARCHER = "archer"
-    CANNON = "cannon"
-    FREEZE = "freeze"
-
-class UnitType(Enum):
-    MAGE = "mage"
-    SOLDAT = "soldat"
-
 class Placement(Enum):
     EDGE = "edge"
     PATH = "path"
+
+class TowerType(Enum):
+    ARCHER = 10
+    CANNON = 20
+    FREEZE = 25
+
+class UnitType(Enum):
+    MAGE = 10
+    SOLDAT = 30

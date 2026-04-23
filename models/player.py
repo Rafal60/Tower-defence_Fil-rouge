@@ -1,6 +1,6 @@
 from typing import List
 from exceptions import InsufficientFundsError
-from enums import UnitType, Team, TowerType, Placement
+from enums import Team, UnitType, TowerType, Placement
 from game_map import MapObject
 from entities import BaseObject, AttackObject, DefenseObject
 
@@ -39,7 +39,13 @@ class AttackerPlayer(PlayerObject):
         self.income_rate = _income_rate
 
     def send_unit(self, unit_type : UnitType, _map : MapObject ) -> None:
-        return
+        if not self.can_afford(unit_type.value) :
+            return
+
+        new_attack_obj = AttackObject(1, unit_type, 1, 1, 1, 1, 1.0, 1, 1, 1, 1, 1, True, (1,1))
+        _map.spawn_unit(new_attack_obj)
+
+        self.spend(unit_type.value)
 
     def collect_income(self, dt : float) -> None:
         self.earn(round(self.income_rate * dt))
@@ -51,24 +57,24 @@ class DefenderPlayer(PlayerObject):
         self.towers = _towers
         self.base = _base
 
-    def place_tower(self, _tower_type : DefenseObject, _x : int, _y : int, _map : MapObject) -> None:
-        if not self.can_afford(_tower_type.price) :
+    def place_tower(self, tower : DefenseObject, x : int, y : int, _map : MapObject) -> None:
+        if not self.can_afford(tower.price) :
             return
 
 
         # Valeur de l'objet à changer
-        new_def_obj = DefenseObject(1, TowerType.ARCHER, 1, 1, 1, 1, None, 1, Placement.EDGE, 1.0,1,1.0, 1, 1, 1)
+        new_def_obj = DefenseObject(1, TowerType.ARCHER, 1, 1, 1, 1, 1.0, 1, 1, x, y, None, 1, Placement.EDGE, 1.0)
 
 
         new_def_obj.deploy(_map)
-        self.spend(_tower_type.price)
+        self.spend(tower.price)
 
-    def sell_tower(self, _tower : DefenseObject,_map : MapObject) -> None:
-        self.earn(round(_tower.price * 0.7))
-        _map.remove_tower(_tower)
+    def sell_tower(self, tower : DefenseObject, _map : MapObject) -> None:
+        self.earn(round(tower.price * 0.7))
+        _map.remove_tower(tower)
 
-    def upgrade_tower(self, _tower : DefenseObject) -> None:
-        if not self.can_afford(_tower.price):
+    def upgrade_tower(self, tower : DefenseObject) -> None:
+        if not self.can_afford(tower.price):
             return
-        self.spend(_tower.price)
-        _tower.upgrade()
+        self.spend(tower.price)
+        tower.upgrade()

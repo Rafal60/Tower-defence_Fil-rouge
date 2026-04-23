@@ -29,7 +29,7 @@ class BaseObject:
         self.x = _x
         self.y = _y
 
-class AttackObject:
+class AttackObject(BaseObject):
     def __init__(self,
                  _id,
                  _type : UnitType,
@@ -68,7 +68,7 @@ class AttackObject:
     def to_dict(self) -> dict:
         return {}
 
-class DefenseObject:
+class DefenseObject(BaseObject):
     def __init__(self,
                  _id,
                  _type : TowerType,
