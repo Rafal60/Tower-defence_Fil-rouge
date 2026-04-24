@@ -6,7 +6,7 @@ from game import GameObject
 import math
 
 
-class BaseObject:
+class EntitiesObject:
     def __init__(self,
                  _id : int,
                  _type : UnitType | TowerType,
@@ -32,7 +32,7 @@ class BaseObject:
         self.x = _x
         self.y = _y
 
-class AttackObject(BaseObject):
+class AttackObject(EntitiesObject):
     def __init__(self,
                  _id,
                  _type : UnitType,
@@ -63,28 +63,26 @@ class AttackObject(BaseObject):
             _map.base.get_attacked(self.damage)
 
 
-    # Type de target à mettre
-    def attack(self, target : List[DefenseObject]) -> None:
+    def attack(self, target : List[DefenseObject], _map : MapObject) -> None:
         arr_coordinates = []
         for towers in target :
             arr_coordinates.append([towers.x, towers.y])
         nearest_coordinate = min(arr_coordinates, key=lambda c: math.sqrt((c[0] - self.x)**2 + (c[1] - self.y)**2))
 
         # dt et map à incorporer
-        self.move(nearest_coordinate, dt=1.0, _map="")
+        self.move(nearest_coordinate, dt=1.0, _map)
 
 
-    def get_attacked(self, damage : int) -> None:
+    def get_attacked(self, damage : int, game : GameObject, defender : DefenseObject) -> None:
         self.hp -= damage
         if self.hp <= 0:
-
-            # GameObject à incorporer
-            self.die(game="")
+            self.die(game, defender)
 
 
     # Méthode die à faire
-    def die(self, game : GameObject):
-        return
+    def die(self, game : GameObject, defender : DefenseObject ) -> None:
+        game.destroy(self)
+        defender.earn(self.reward)
 
     def to_dict(self) -> dict:
         return {
@@ -104,7 +102,7 @@ class AttackObject(BaseObject):
             "waypoint_index" : self.waypoint_index
         }
 
-class DefenseObject(BaseObject):
+class DefenseObject(EntitiesObject):
     def __init__(self,
                  _id,
                  _type : TowerType,

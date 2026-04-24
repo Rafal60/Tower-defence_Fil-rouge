@@ -16,3 +16,8 @@ class TowerType(Enum):
 class UnitType(Enum):
     MAGE = 10
     SOLDAT = 30
+
+class State(Enum):
+    WAITING = "waiting"
+    PLAYING = "playing"
+    GAME_OVER = "game_over"

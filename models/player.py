@@ -2,7 +2,8 @@ from typing import List
 from exceptions import InsufficientFundsError
 from enums import Team, UnitType, TowerType, Placement
 from game_map import MapObject
-from entities import BaseObject, AttackObject, DefenseObject
+from entities import AttackObject, DefenseObject
+from base import BaseObject
 
 
 class PlayerObject:
