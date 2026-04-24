@@ -1,7 +1,9 @@
+from __future__ import annotations
 from typing import Tuple
 from enums import UnitType, TowerType, Placement
 from game_map import MapObject
 from game import GameObject
+
 
 class BaseObject:
     def __init__(self,
@@ -56,7 +58,7 @@ class AttackObject(BaseObject):
         return
 
     # Type de target à mettre
-    def attack(self, target) -> None:
+    def attack(self, target : DefenseObject) -> None:
         return
 
     def get_attacked(self, damage : int) -> None:
