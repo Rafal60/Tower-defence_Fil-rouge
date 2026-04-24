@@ -1,7 +1,10 @@
-from typing import Tuple
+from __future__ import annotations
+from typing import Tuple, List
 from enums import UnitType, TowerType, Placement
 from game_map import MapObject
 from game import GameObject
+import math
+
 
 class BaseObject:
     def __init__(self,
@@ -51,22 +54,55 @@ class AttackObject(BaseObject):
         self.is_melee = _is_melee
         self.waypoint_index = _waypoint_index
 
-    # Type de path à mettre
-    def move(self, path, dt : float) -> None:
-        return
+    def move(self, path : Tuple[int, int], dt : float, _map : MapObject) -> None:
+        self.x, self.y = path
+
+        # Logique du mouvement selon speed et dt à ajouter
+
+        if (self.x, self.y) == (_map.base.x, _map.base.y):
+            _map.base.get_attacked(self.damage)
+
 
     # Type de target à mettre
-    def attack(self, target) -> None:
-        return
+    def attack(self, target : List[DefenseObject]) -> None:
+        arr_coordinates = []
+        for towers in target :
+            arr_coordinates.append([towers.x, towers.y])
+        nearest_coordinate = min(arr_coordinates, key=lambda c: math.sqrt((c[0] - self.x)**2 + (c[1] - self.y)**2))
+
+        # dt et map à incorporer
+        self.move(nearest_coordinate, dt=1.0, _map="")
+
 
     def get_attacked(self, damage : int) -> None:
-        return
+        self.hp -= damage
+        if self.hp <= 0:
 
+            # GameObject à incorporer
+            self.die(game="")
+
+
+    # Méthode die à faire
     def die(self, game : GameObject):
         return
 
     def to_dict(self) -> dict:
-        return {}
+        return {
+            "id" : self.id,
+            "type" : self.type,
+            "price" : self.price,
+            "hp" : self.hp,
+            "max_hp" : self.max_hp,
+            "damage" : self.damage,
+            "attack_speed" : self.attack_speed,
+            "attack_range" : self.attack_range,
+            "reward" : self.reward,
+            "x" : self.x,
+            "y" : self.y,
+            "speed" : self.speed,
+            "is_melee" : self.is_melee,
+            "waypoint_index" : self.waypoint_index
+        }
 
 class DefenseObject(BaseObject):
     def __init__(self,
@@ -104,7 +140,6 @@ class DefenseObject(BaseObject):
     def destroy(self, _map : MapObject, game : GameObject) -> None:
         return
 
-    # Type de path à mettre
     def upgrade(self) -> None:
         return
 
@@ -112,6 +147,22 @@ class DefenseObject(BaseObject):
         return
 
     def to_dict(self) -> dict:
-        return {}
+        return {
+            "id": self.id,
+            "type": self.type,
+            "price": self.price,
+            "hp": self.hp,
+            "max_hp": self.max_hp,
+            "damage": self.damage,
+            "attack_speed": self.attack_speed,
+            "attack_range": self.attack_range,
+            "reward": self.reward,
+            "x": self.x,
+            "y": self.y,
+            "duration" : self.duration,
+            "size" : self.size,
+            "placement" : self.placement,
+            "cooldown_remaining" : self.cooldown_remaining
+        }
 
 
