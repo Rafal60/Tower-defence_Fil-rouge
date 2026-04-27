@@ -3,3 +3,4 @@ flask-socketio
 qrcode[pil]
 eventlet
 python-dotenv
+flask_sqlalchemy
