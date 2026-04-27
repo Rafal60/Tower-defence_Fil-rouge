@@ -1,9 +1,9 @@
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 __author__ = "Kitsu"
 
 from .player import AttackerPlayer, DefenderPlayer
 from .game_map import MapObject
-from .entities import DefenseObject, AttackObject
+from .entities import TowerObject, UnitObject
 from .round import RoundObject
 from .base import BaseObject
 

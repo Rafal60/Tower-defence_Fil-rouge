@@ -36,7 +36,7 @@ class GameObject:
         self.check_game_over()
         self.broadcast_state()
 
-    def  update_units(self, dt) -> None:
+    def update_units(self, dt) -> None:
         return
 
     def update_towers(self) -> None:
@@ -57,7 +57,7 @@ class GameObject:
     def next_round(self) -> None:
         return
 
-    def end_game(self, winner) -> None:
+    def end_game(self, winner : str) -> None:
         return
 
 """

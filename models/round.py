@@ -1,7 +1,6 @@
 from typing import List
-
 from game import GameObject
-from models import AttackObject
+from models import UnitObject
 
 
 class RoundObject:
@@ -19,7 +18,7 @@ class RoundObject:
             # Gestion du spawn de la prochaine unité à faire
             self.spawn_queue.append(X)
 
-    def spawn_next(self, game : GameObject, unit : AttackObject) -> None:
+    def spawn_next(self, game : GameObject, unit : UnitObject) -> None:
         game.units.append(unit)
 
 
