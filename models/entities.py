@@ -13,7 +13,6 @@ class EntitiesObject:
                  _type : UnitType | TowerType,
                  _price : int,
                  _hp : int,
-                 _max_hp : int,
                  _damage : int,
                  _attack_speed : float,
                  _attack_range : int,
@@ -26,7 +25,7 @@ class EntitiesObject:
         self.type = _type
         self.price = _price
         self.hp = _hp
-        self.max_hp = _max_hp
+        self.max_hp = _hp
         self.damage = _damage
         self.attack_speed = _attack_speed
         self.attack_range = _attack_range
@@ -41,7 +40,6 @@ class UnitObject(EntitiesObject):
                  _type : UnitType,
                  _price,
                  _hp,
-                 _max_hp,
                  _damage,
                  _attack_speed,
                  _attack_range,
@@ -53,7 +51,7 @@ class UnitObject(EntitiesObject):
                  _is_melee : bool,
                  _waypoint_index : Tuple[int, int]
                  ) -> None:
-        super().__init__(_id, _type, _price, _hp, _max_hp, _damage, _attack_speed, _attack_range, _reward, _x, _y, _map)
+        super().__init__(_id, _type, _price, _hp, _damage, _attack_speed, _attack_range, _reward, _x, _y, _map)
         self.speed = _speed
         self.is_melee = _is_melee
         self.waypoint_index = _waypoint_index
@@ -103,19 +101,19 @@ class TowerObject(EntitiesObject):
                  _type : TowerType,
                  _price,
                  _hp,
-                 _max_hp,
                  _damage,
                  _attack_speed,
                  _attack_range,
                  _reward,
                  _x,
                  _y,
+                 _map,
                  _duration: float | None,
                  _size: int,
                  _placement: Placement,
                  _cooldown_remaining: float,
                  ) -> None:
-        super().__init__(_id, _type, _price, _hp, _max_hp, _damage, _attack_speed, _attack_range, _reward, _x, _y)
+        super().__init__(_id, _type, _price, _hp, _damage, _attack_speed, _attack_range, _reward, _x, _y, _map)
         self.duration = _duration
         self.size = _size
         self.placement = _placement

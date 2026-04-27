@@ -41,13 +41,16 @@ class AttackerPlayer(PlayerObject):
         self.income_rate = _income_rate
 
     def send_unit(self, unit_type : UnitType) -> None:
-        if not self.can_afford(unit_type.value) :
+        data = unit_type.value
+
+        if not self.can_afford(data.price) :
             return
 
-        new_attack_obj = UnitObject(1, unit_type, 1, 1, 1, 1, 1.0, 1, 1, 1, 1,self.map, 1, True, (1,1))
-        self.map.spawn_unit(new_attack_obj)
+        # waypoint_index à changer ( index du prochain waypoint sur le chemin)
+        new_unit = UnitObject(1, unit_type, data.price, data.hp, data.damage, data.attack_speed, data.range, data.reward, self.map.spawn.x,  self.map.spawn.y ,self.map, data.speed, data.is_melee, (1, 1))
+        self.map.spawn_unit(new_unit)
+        self.spend(data.price)
 
-        self.spend(unit_type.value)
 
     def collect_income(self, dt : float) -> None:
         self.earn(round(self.income_rate * dt))
@@ -59,17 +62,14 @@ class DefenderPlayer(PlayerObject):
         self.towers = _towers
         self.base = _base
 
-    def place_tower(self, tower : TowerObject, x : int, y : int, _map : MapObject) -> None:
-        if not self.can_afford(tower.price) :
+    def place_tower(self, tower_type : TowerType, x : int, y : int) -> None:
+        data = tower_type.value
+        new_tower = TowerObject(1, tower_type, data.price, data.hp, data.damage, data.attack_speed, data.range, data.reward, x, y ,self.map, data.duration, data.size, data.placement, data.cooldown_remaining)
+        if not self.can_afford(data.price) :
             return
 
-
-        # Valeur de l'objet à changer
-        new_def_obj = TowerObject(1, TowerType.ARCHER, 1, 1, 1, 1, 1.0, 1, 1, x, y, None, 1, Placement.EDGE, 1.0)
-
-
-        new_def_obj.deploy(_map)
-        self.spend(tower.price)
+        new_tower.deploy(self.map)
+        self.spend(data.price)
 
     def sell_tower(self, tower : TowerObject,) -> None:
         self.earn(round(tower.price * 0.7))
