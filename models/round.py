@@ -1,24 +1,57 @@
-from typing import List
+from typing import List, Dict
 from game import GameObject
-from models import UnitObject
+from enums import UnitType
+from models import AttackObject
 
 
 class RoundObject:
-    def __init__(self, _round_number : int, _spawn_queue : List[dict], _spawn_timer : float, _is_finished : bool):
+    def __init__(
+        self,
+        _round_number: int,
+        _spawn_queue: List[Dict],
+    ):
         self.round_number = _round_number
-        self.spawn_queue = _spawn_queue
-        self.spawn_timer = _spawn_timer
-        self.is_finished = _is_finished
+        self.spawn_queue = _spawn_queue  # [{ "type": UnitType, "delay": float }]
+        self.spawn_timer = 0.0
+        self.is_finished = False
 
-    def update(self, dt : float) -> None :
+    def update(self, dt: float, game: GameObject) -> None:
+        if self.is_finished:
+            return
         self.spawn_timer -= dt
-        if self.spawn_timer <= 0:
 
+        if self.spawn_timer <= 0 and len(self.spawn_queue) > 0:
+            next_spawn = self.spawn_queue.pop(0)
+            unit_type: UnitType = next_spawn["type"]
+            delay: float = next_spawn["delay"]
+            self.spawn_next(game, unit_type)
+            self.spawn_timer = delay
 
-            # Gestion du spawn de la prochaine unité à faire
-            self.spawn_queue.append(X)
+        if len(self.spawn_queue) == 0 and len(game.units) == 0:
+            self.is_finished = True
 
-    def spawn_next(self, game : GameObject, unit : UnitObject) -> None:
+    def spawn_next(self, game: GameObject, unit_type: UnitType) -> None:
+        data = unit_type.value
+
+        spawn_x, spawn_y = game.map.spawn_point
+
+        unit = AttackObject(
+            game.get_next_id(),
+            unit_type,
+            data.price,
+            data.hp,
+            data.hp,
+            data.damage,
+            data.attack_speed,
+            data.attack_range,
+            data.reward,
+            spawn_x,
+            spawn_y,
+            data.speed,
+            data.is_melee,
+            (0, 0)
+        )
+
         game.units.append(unit)
 
 
