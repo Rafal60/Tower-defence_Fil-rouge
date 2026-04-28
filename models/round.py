@@ -1,41 +1,46 @@
-from typing import List
+from __future__ import annotations
+from typing import TYPE_CHECKING,List
 
-from game import GameObject
-from models import AttackObject
+if TYPE_CHECKING:
+    from game import GameObject
+
+from .entities import UnitObject
+from enums import UnitType
 
 
 class RoundObject:
-    def __init__(self, _round_number : int, _spawn_queue : List[dict], _spawn_timer : float, _is_finished : bool):
+    def __init__(self, _round_number: int, _spawn_queue: List[dict], _spawn_timer: float):
+        """
+        Args:
+            _round_number: numéro de la vague
+            _spawn_queue: liste ordonnée d'unités à spawn [{"type": UnitType.SOLDAT, "delay": 1.5}, ...]
+            _spawn_timer: temps initial avant le premier spawn
+        """
         self.round_number = _round_number
         self.spawn_queue = _spawn_queue
         self.spawn_timer = _spawn_timer
-        self.is_finished = _is_finished
+        self.is_finished = False
 
-    def update(self, dt : float) -> None :
+    def update(self, dt: float, game: GameObject) -> None:
+        """Appelée à chaque tick. Décrémente le timer et spawn quand il atteint 0."""
+        if self.is_finished:
+            return
+
         self.spawn_timer -= dt
-        if self.spawn_timer <= 0:
 
+        if self.spawn_timer <= 0 and self.spawn_queue:
+            next_unit_data = self.spawn_queue.pop(0)
+            self.spawn_next(game, next_unit_data)
 
-            # Gestion du spawn de la prochaine unité à faire
-            self.spawn_queue.append(X)
+            # Reset le timer avec le délai de la prochaine unité
+            if self.spawn_queue:
+                self.spawn_timer = self.spawn_queue[0].get("delay", 1.0)
 
-    def spawn_next(self, game : GameObject, unit : AttackObject) -> None:
-        game.units.append(unit)
+        # La vague est "finie côté spawn" quand la queue est vide
+        if not self.spawn_queue:
+            self.is_finished = True
 
-
-
-
-
-'''
-round_number — numéro de la vague
-spawn_queue — liste ordonnée d'unités à faire apparaître [{ "type": "archer",
-"delay": 1.5 }, ...]
-spawn_timer — timer interne pour espacer les spawns
-is_finished — True quand toutes les unités ont été envoyées et qu'il ne
-reste plus d'unités vivantes
-Méthodes :
-update(dt) — décrémente spawn_timer , spawn la prochaine unité si le timer
-atteint 0
-spawn_next(game: GameObject) — crée l' AttackObject suivant et l'ajoute à
-game.units
-'''
+    def spawn_next(self, game: GameObject, unit_data: dict) -> None:
+        """Crée l'unité et l'ajoute sur la carte via l'attaquant."""
+        unit_type = unit_data["type"]
+        game.attacker.send_unit(unit_type)

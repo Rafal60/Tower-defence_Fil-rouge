@@ -1,0 +1,113 @@
+.hud-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 1rem;
+}
+
+.hud-left, .hud-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.hud-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.hud-stat .icon {
+  font-size: 1.2rem;
+}
+
+.hud-stat .value {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+}
+
+.hud-stat .value.gold {
+  color: var(--accent-amber);
+}
+
+.hud-stat .value.lives {
+  color: var(--accent-red);
+}
+
+.hud-stat .value.wave {
+  color: var(--accent-cyan);
+}
+
+.hud-team {
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.hud-team.defender {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--accent-emerald);
+}
+
+.hud-team.attacker {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--accent-red);
+}
+
+.hud-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+ 
+.wave-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+ 
+.wave-timer-label {
+  font-size: 0.7rem;
+  color: var(--text-muted, #aaa);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+ 
+.wave-timer-count {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--gold, #f0c040);
+  transition: color 0.3s;
+  line-height: 1;
+}
+ 
+/* Devient rouge dans les 5 dernières secondes */
+.wave-timer-count.urgent {
+  color: #ff4444;
+  animation: pulse-urgent 0.5s ease-in-out infinite alternate;
+}
+ 
+@keyframes pulse-urgent {
+  from { transform: scale(1);    opacity: 1; }
+  to   { transform: scale(1.15); opacity: 0.8; }
+}
+ 
+.wave-timer.fighting .wave-timer-label {
+  font-size: 0.9rem;
+  color: #ff8844;
+  animation: pulse-fight 1s ease-in-out infinite alternate;
+}
+ 
+@keyframes pulse-fight {
+  from { opacity: 0.7; }
+  to   { opacity: 1; }
+}

@@ -1,17 +1,19 @@
+               # ← ce bloc ne s'exécute JAMAIS à runtime
+from .game_map import MapObject
 from typing import List
 from exceptions import InsufficientFundsError
-from enums import Team, UnitType, TowerType, Placement
-from game_map import MapObject
-from entities import AttackObject, DefenseObject
-from base import BaseObject
+from enums import Team, UnitType, TowerType
+from .entities import UnitObject, TowerObject
+from .base import BaseObject
 
 
 class PlayerObject:
-    def __init__(self, _id: int, _username : str, _gold : int, _team : Team):
+    def __init__(self, _id: int, _username : str, _gold : int, _team : Team, _map : MapObject ) -> None:
         self.id = _id
         self.username = _username
         self.gold = _gold
         self.team = _team
+        self.map = _map
 
     def can_afford(self, item_amount) -> bool:
         return item_amount <= self.gold
@@ -34,47 +36,47 @@ class PlayerObject:
         return obj
 
 class AttackerPlayer(PlayerObject):
-    def __init__(self, _id, _username, _gold, _team,  _units_sent : List[AttackObject], _income_rate : int):
-        super().__init__(_id, _username, _gold, _team)
+    def __init__(self, _id, _username, _gold, _team, _map,  _units_sent : List[UnitObject], _income_rate : int):
+        super().__init__(_id, _username, _gold, _team, _map)
         self.units_sent = _units_sent
         self.income_rate = _income_rate
 
-    def send_unit(self, unit_type : UnitType, _map : MapObject ) -> None:
-        if not self.can_afford(unit_type.value) :
+    def send_unit(self, unit_type : UnitType) -> None:
+        data = unit_type.value
+
+        if not self.can_afford(data.price) :
             return
 
-        new_attack_obj = AttackObject(1, unit_type, 1, 1, 1, 1, 1.0, 1, 1, 1, 1, 1, True, (1,1))
-        _map.spawn_unit(new_attack_obj)
+        # waypoint_index à changer ( index du prochain waypoint sur le chemin)
+        new_unit = UnitObject(id(unit_type), unit_type, data.price, data.hp, data.damage, data.attack_speed, data.range, data.reward, self.map.spawn.x,  self.map.spawn.y ,self.map, data.speed, data.is_melee, _waypoint_index=1)
+        self.map.spawn_unit(new_unit)
+        self.spend(data.price)
 
-        self.spend(unit_type.value)
 
     def collect_income(self, dt : float) -> None:
         self.earn(round(self.income_rate * dt))
 
 
 class DefenderPlayer(PlayerObject):
-    def __init__(self, _id, _username, _gold, _team,  _towers : List[DefenseObject], _base : BaseObject):
-        super().__init__(_id, _username, _gold, _team)
+    def __init__(self, _id, _username, _gold, _team, _map: MapObject,  _towers : List[TowerObject], _base : BaseObject):
+        super().__init__(_id, _username, _gold, _team, _map)
         self.towers = _towers
         self.base = _base
 
-    def place_tower(self, tower : DefenseObject, x : int, y : int, _map : MapObject) -> None:
-        if not self.can_afford(tower.price) :
+    def place_tower(self, tower_type : TowerType, x : int, y : int) -> None:
+        data = tower_type.value
+        new_tower = TowerObject(1, tower_type, data.price, data.hp, data.damage, data.attack_speed, data.range, data.reward, x, y ,self.map, data.duration, data.size, data.placement, data.cooldown_remaining)
+        if not self.can_afford(data.price) :
             return
 
+        new_tower.deploy(self.map)
+        self.spend(data.price)
 
-        # Valeur de l'objet à changer
-        new_def_obj = DefenseObject(1, TowerType.ARCHER, 1, 1, 1, 1, 1.0, 1, 1, x, y, None, 1, Placement.EDGE, 1.0)
-
-
-        new_def_obj.deploy(_map)
-        self.spend(tower.price)
-
-    def sell_tower(self, tower : DefenseObject, _map : MapObject) -> None:
+    def sell_tower(self, tower : TowerObject,) -> None:
         self.earn(round(tower.price * 0.7))
-        _map.remove_tower(tower)
+        self.map.remove_tower(tower)
 
-    def upgrade_tower(self, tower : DefenseObject) -> None:
+    def upgrade_tower(self, tower : TowerObject) -> None:
         if not self.can_afford(tower.price):
             return
         self.spend(tower.price)
