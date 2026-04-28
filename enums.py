@@ -1,8 +1,11 @@
 from enum import Enum
+from dataclasses import dataclass
+
 
 class Team(Enum):
     ATTACKER = "attacker"
     DEFENDER = "defender"
+
 
 
 class Placement(Enum):
@@ -10,12 +13,13 @@ class Placement(Enum):
     PATH = "path"
 
 
+
 class State(Enum):
     WAITING = "waiting"
     PLAYING = "playing"
     GAME_OVER = "game_over"
 
-
+@dataclass(frozen=True)
 class UnitData:
     def __init__(self, price, hp, damage, attack_speed, range, reward, speed, is_melee):
         self.price = price
@@ -27,7 +31,7 @@ class UnitData:
         self.speed = speed
         self.is_melee = is_melee
 
-
+@dataclass(frozen=True)
 class TowerData:
     def __init__(self, price, hp, damage, attack_speed, range, reward, duration, size, placement, cooldown):
         self.price = price

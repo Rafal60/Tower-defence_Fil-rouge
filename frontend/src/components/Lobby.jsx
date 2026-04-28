@@ -36,11 +36,11 @@ export default function Lobby({ emit, on, isConnected, onGameStart }) {
     }));
 
     cleanups.push(on(ON.GAME_START, (data) => {
-      onGameStart(data);
+      onGameStart({ ...data, myTeam: team });
     }));
 
     return () => cleanups.forEach(fn => fn && fn());
-  }, [on, onGameStart]);
+  }, [on, onGameStart, team]);
 
   const handleCreate = (e) => {
     e.preventDefault();

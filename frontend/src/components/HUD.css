@@ -60,3 +60,54 @@
   background: rgba(239, 68, 68, 0.15);
   color: var(--accent-red);
 }
+
+.hud-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+ 
+.wave-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+ 
+.wave-timer-label {
+  font-size: 0.7rem;
+  color: var(--text-muted, #aaa);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+ 
+.wave-timer-count {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--gold, #f0c040);
+  transition: color 0.3s;
+  line-height: 1;
+}
+ 
+/* Devient rouge dans les 5 dernières secondes */
+.wave-timer-count.urgent {
+  color: #ff4444;
+  animation: pulse-urgent 0.5s ease-in-out infinite alternate;
+}
+ 
+@keyframes pulse-urgent {
+  from { transform: scale(1);    opacity: 1; }
+  to   { transform: scale(1.15); opacity: 0.8; }
+}
+ 
+.wave-timer.fighting .wave-timer-label {
+  font-size: 0.9rem;
+  color: #ff8844;
+  animation: pulse-fight 1s ease-in-out infinite alternate;
+}
+ 
+@keyframes pulse-fight {
+  from { opacity: 0.7; }
+  to   { opacity: 1; }
+}

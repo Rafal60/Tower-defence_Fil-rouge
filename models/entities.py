@@ -1,10 +1,15 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:                     # ← ce bloc ne s'exécute JAMAIS à runtime
+    from .game_map import MapObject
+    from .player import AttackerPlayer, DefenderPlayer
+
 from typing import Tuple, List
 from enums import UnitType, TowerType, Placement
-from game_map import MapObject
 import math
 
-from models import AttackerPlayer, DefenderPlayer
+
 
 
 class EntitiesObject:
@@ -20,11 +25,14 @@ class EntitiesObject:
                  _x : int,
                  _y : int,
                  _map : MapObject
+                 _y : int,
+                 _map : MapObject
                  ) -> None:
         self.id = _id
         self.type = _type
         self.price = _price
         self.hp = _hp
+        self.max_hp = _hp
         self.max_hp = _hp
         self.damage = _damage
         self.attack_speed = _attack_speed
@@ -33,7 +41,9 @@ class EntitiesObject:
         self.x = _x
         self.y = _y
         self.map = _map
+        self.map = _map
 
+class UnitObject(EntitiesObject):
 class UnitObject(EntitiesObject):
     def __init__(self,
                  _id,
@@ -47,21 +57,29 @@ class UnitObject(EntitiesObject):
                  _x,
                  _y,
                  _map,
+                 _map,
                  _speed : int,
                  _is_melee : bool,
                  _waypoint_index : Tuple[int, int]
                  ) -> None:
+        super().__init__(_id, _type, _price, _hp, _damage, _attack_speed, _attack_range, _reward, _x, _y, _map)
         super().__init__(_id, _type, _price, _hp, _damage, _attack_speed, _attack_range, _reward, _x, _y, _map)
         self.speed = _speed
         self.is_melee = _is_melee
         self.waypoint_index = _waypoint_index
 
     def move(self, path : Tuple[int, int]) -> None:
+    def move(self, path : Tuple[int, int]) -> None:
         self.x, self.y = path
+        if (self.x, self.y) == (self.map.base.x, self.map.base.y):
+            self.map.base.get_attacked(self.damage)
         if (self.x, self.y) == (self.map.base.x, self.map.base.y):
             self.map.base.get_attacked(self.damage)
 
 
+    def attack(self) -> None:
+        if [self.x, self.y] == self.map.base:
+            self.map.base.get_attacked(self.damage)
     def attack(self) -> None:
         if [self.x, self.y] == self.map.base:
             self.map.base.get_attacked(self.damage)
@@ -70,6 +88,7 @@ class UnitObject(EntitiesObject):
     def get_attacked(self, damage : int, defender : DefenderPlayer = None) -> None:
         self.hp -= damage
         if self.hp <= 0:
+            self.die(defender)
             self.die(defender)
 
 
@@ -81,7 +100,7 @@ class UnitObject(EntitiesObject):
     def to_dict(self) -> dict:
         return {
             "id" : self.id,
-            "type" : self.type,
+            "type" : self.type.name,
             "price" : self.price,
             "hp" : self.hp,
             "max_hp" : self.max_hp,
@@ -97,6 +116,7 @@ class UnitObject(EntitiesObject):
         }
 
 class TowerObject(EntitiesObject):
+class TowerObject(EntitiesObject):
     def __init__(self,
                  _id,
                  _type : TowerType,
@@ -109,11 +129,13 @@ class TowerObject(EntitiesObject):
                  _x,
                  _y,
                  _map,
+                 _map,
                  _duration: float | None,
                  _size: int,
                  _placement: Placement,
                  _cooldown_remaining: float,
                  ) -> None:
+        super().__init__(_id, _type, _price, _hp, _damage, _attack_speed, _attack_range, _reward, _x, _y, _map)
         super().__init__(_id, _type, _price, _hp, _damage, _attack_speed, _attack_range, _reward, _x, _y, _map)
         self.duration = _duration
         self.size = _size
@@ -122,7 +144,16 @@ class TowerObject(EntitiesObject):
 
     def deploy(self, _map : MapObject) -> None:
         _map.add_tower(self)
+        _map.add_tower(self)
 
+    def attack(self, target : List[UnitObject]) -> None:
+        arr_coordinates = []
+        for unit in target:
+            arr_coordinates.append([unit.x, unit.y])
+        nearest_coordinate = min(arr_coordinates, key=lambda c: math.sqrt((c[0] - self.x) ** 2 + (c[1] - self.y) ** 2))
+        for unit in target:
+            if [unit.x, unit.y] == nearest_coordinate :
+                unit.get_attacked(self.damage)
     def attack(self, target : List[UnitObject]) -> None:
         arr_coordinates = []
         for unit in target:
@@ -134,6 +165,8 @@ class TowerObject(EntitiesObject):
 
     def destroy(self) -> None:
         self.map.remove_tower(self)
+    def destroy(self) -> None:
+        self.map.remove_tower(self)
 
     def upgrade(self) -> None:
         return
@@ -141,11 +174,14 @@ class TowerObject(EntitiesObject):
     def sell(self, defender : DefenderPlayer) -> None:
         defender.earn(round(self.price * 0.75))
         self.map.remove_tower(self)
+    def sell(self, defender : DefenderPlayer) -> None:
+        defender.earn(round(self.price * 0.75))
+        self.map.remove_tower(self)
 
     def to_dict(self) -> dict:
         return {
             "id": self.id,
-            "type": self.type,
+            "type": self.type.name,
             "price": self.price,
             "hp": self.hp,
             "max_hp": self.max_hp,
@@ -157,7 +193,7 @@ class TowerObject(EntitiesObject):
             "y": self.y,
             "duration" : self.duration,
             "size" : self.size,
-            "placement" : self.placement,
+            "placement" : self.placement.name,
             "cooldown_remaining" : self.cooldown_remaining
         }
 

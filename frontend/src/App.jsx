@@ -13,9 +13,7 @@ function App() {
   };
 
   // Trouver notre team dans les données de la partie
-  const team = gameData
-    ? Object.values(gameData.players).find(p => true)?.team // sera affiné quand on aura le sid
-    : null;
+  const team = gameData?.myTeam ?? null;
 
   if (!gameData) {
     return (
