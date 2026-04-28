@@ -7,53 +7,103 @@ class Team(Enum):
     DEFENDER = "defender"
 
 
+
 class Placement(Enum):
     EDGE = "edge"
     PATH = "path"
 
-
-@dataclass(frozen=True)
-class TowerData:
-    """Données de base pour un type de tour."""
-    price: int
-    hp: int
-    damage: int
-    attack_speed: float   # secondes entre chaque attaque
-    range: int            # portée en cases
-    reward: int           # or donné à l'attaquant si détruite
-    duration: float | None  # durée de vie (None = permanente)
-    size: int             # taille en cases (1 = 1x1)
-    placement: "Placement"
-    cooldown_remaining: float  # cooldown initial
-
-
-class TowerType(Enum):
-    #                     price  hp  dmg  atk_spd  range  reward  duration  size  placement       cooldown
-    ARCHER = TowerData(    10,   50,  8,   1.0,     3,     5,     None,      1,   Placement.EDGE,  0.0)
-    CANNON = TowerData(    20,   80,  25,  2.5,     2,     10,    None,      1,   Placement.EDGE,  0.0)
-    FREEZE = TowerData(    25,   40,  0,   2.0,     3,     12,    None,      1,   Placement.EDGE,  0.0)
-
-
-@dataclass(frozen=True)
-class UnitData:
-    """Données de base pour un type d'unité."""
-    price: int
-    hp: int
-    damage: int
-    attack_speed: float   # secondes entre chaque attaque
-    range: int            # portée en cases
-    reward: int           # or donné au défenseur si tuée
-    speed: int            # vitesse de déplacement (cases/seconde)
-    is_melee: bool
-
-
-class UnitType(Enum):
-    #                    price  hp   dmg  atk_spd  range  reward  speed  is_melee
-    MAGE   = UnitData(   10,    60,   12,  1.5,     3,     8,      2,    False)
-    SOLDAT = UnitData(   30,    150,  20,  1.0,     1,     15,     1,    True)
 
 
 class State(Enum):
     WAITING = "waiting"
     PLAYING = "playing"
     GAME_OVER = "game_over"
+
+@dataclass(frozen=True)
+class UnitData:
+    def __init__(self, price, hp, damage, attack_speed, range, reward, speed, is_melee):
+        self.price = price
+        self.hp = hp
+        self.damage = damage
+        self.attack_speed = attack_speed
+        self.range = range
+        self.reward = reward
+        self.speed = speed
+        self.is_melee = is_melee
+
+@dataclass(frozen=True)
+class TowerData:
+    def __init__(self, price, hp, damage, attack_speed, range, reward, duration, size, placement, cooldown):
+        self.price = price
+        self.hp = hp
+        self.damage = damage
+        self.attack_speed = attack_speed
+        self.range = range
+        self.reward = reward
+        self.duration = duration
+        self.size = size
+        self.placement = placement
+        self.cooldown = cooldown
+
+class UnitType(Enum):
+    MAGE = UnitData(
+        price=10,
+        hp=40,
+        damage=8,
+        attack_speed=1.5,
+        attack_range=3,
+        reward=5,
+        speed=2,
+        is_melee=False
+    )
+
+    SOLDAT = UnitData(
+        price=30,
+        hp=100,
+        damage=12,
+        attack_speed=1.0,
+        attack_range=1,
+        reward=10,
+        speed=1,
+        is_melee=True
+    )
+
+class TowerType(Enum):
+    ARCHER = TowerData(
+        price=10,
+        hp=100,
+        damage=10,
+        attack_speed=1.0,
+        attack_range=4,
+        reward=5,
+        duration=None,
+        size=1,
+        placement=Placement.EDGE,
+        cooldown=0.0
+    )
+
+    CANNON = TowerData(
+        price=20,
+        hp=150,
+        damage=25,
+        attack_speed=2.0,
+        attack_range=3,
+        reward=10,
+        duration=None,
+        size=2,
+        placement=Placement.EDGE,
+        cooldown=0.0
+    )
+
+    FREEZE = TowerData(
+        price=25,
+        hp=80,
+        damage=5,
+        attack_speed=1.5,
+        attack_range=3,
+        reward=12,
+        duration=10.0,
+        size=1,
+        placement=Placement.PATH,
+        cooldown=0.0
+    )

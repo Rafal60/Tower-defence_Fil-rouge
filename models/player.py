@@ -9,10 +9,12 @@ from .base import BaseObject
 
 class PlayerObject:
     def __init__(self, _id: int, _username : str, _gold : int, _team : Team, _map : MapObject ) -> None:
+    def __init__(self, _id: int, _username : str, _gold : int, _team : Team, _map : MapObject ) -> None:
         self.id = _id
         self.username = _username
         self.gold = _gold
         self.team = _team
+        self.map = _map
         self.map = _map
 
     def can_afford(self, item_amount) -> bool:
@@ -38,9 +40,15 @@ class PlayerObject:
 class AttackerPlayer(PlayerObject):
     def __init__(self, _id, _username, _gold, _team, _map,  _units_sent : List[UnitObject], _income_rate : int):
         super().__init__(_id, _username, _gold, _team, _map)
+    def __init__(self, _id, _username, _gold, _team, _map,  _units_sent : List[UnitObject], _income_rate : int):
+        super().__init__(_id, _username, _gold, _team, _map)
         self.units_sent = _units_sent
         self.income_rate = _income_rate
 
+    def send_unit(self, unit_type : UnitType) -> None:
+        data = unit_type.value
+
+        if not self.can_afford(data.price) :
     def send_unit(self, unit_type : UnitType) -> None:
         data = unit_type.value
 
@@ -67,15 +75,24 @@ class DefenderPlayer(PlayerObject):
         data = tower_type.value
         new_tower = TowerObject(1, tower_type, data.price, data.hp, data.damage, data.attack_speed, data.range, data.reward, x, y ,self.map, data.duration, data.size, data.placement, data.cooldown_remaining)
         if not self.can_afford(data.price) :
+    def place_tower(self, tower_type : TowerType, x : int, y : int) -> None:
+        data = tower_type.value
+        new_tower = TowerObject(1, tower_type, data.price, data.hp, data.damage, data.attack_speed, data.range, data.reward, x, y ,self.map, data.duration, data.size, data.placement, data.cooldown_remaining)
+        if not self.can_afford(data.price) :
             return
 
         new_tower.deploy(self.map)
         self.spend(data.price)
+        new_tower.deploy(self.map)
+        self.spend(data.price)
 
+    def sell_tower(self, tower : TowerObject,) -> None:
     def sell_tower(self, tower : TowerObject,) -> None:
         self.earn(round(tower.price * 0.7))
         self.map.remove_tower(tower)
+        self.map.remove_tower(tower)
 
+    def upgrade_tower(self, tower : TowerObject) -> None:
     def upgrade_tower(self, tower : TowerObject) -> None:
         if not self.can_afford(tower.price):
             return
