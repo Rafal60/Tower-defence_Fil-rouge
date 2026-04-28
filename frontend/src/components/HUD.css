@@ -1,0 +1,62 @@
+.hud-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 1rem;
+}
+
+.hud-left, .hud-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.hud-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.hud-stat .icon {
+  font-size: 1.2rem;
+}
+
+.hud-stat .value {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+}
+
+.hud-stat .value.gold {
+  color: var(--accent-amber);
+}
+
+.hud-stat .value.lives {
+  color: var(--accent-red);
+}
+
+.hud-stat .value.wave {
+  color: var(--accent-cyan);
+}
+
+.hud-team {
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.hud-team.defender {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--accent-emerald);
+}
+
+.hud-team.attacker {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--accent-red);
+}

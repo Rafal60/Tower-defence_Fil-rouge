@@ -67,15 +67,16 @@ class UnitObject(EntitiesObject):
             self.map.base.get_attacked(self.damage)
 
 
-    def get_attacked(self, damage : int, defender : DefenderPlayer = X) -> None:
+    def get_attacked(self, damage : int, defender : DefenderPlayer = None) -> None:
         self.hp -= damage
         if self.hp <= 0:
             self.die(defender)
 
 
-    def die(self, defender : DefenderPlayer) -> None:
+    def die(self, defender : DefenderPlayer = None) -> None:
         self.map.remove_unit(self)
-        defender.earn(self.reward)
+        if defender is not None:
+            defender.earn(self.reward)
 
     def to_dict(self) -> dict:
         return {
