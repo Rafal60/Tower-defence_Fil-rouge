@@ -60,12 +60,6 @@ Lobby → create_room / join_room → player_ready → game_start
 
 ---
 
-## Ce qu'il reste à faire
-
-1. **Grille 2D côté backend** : `MapObject` doit exposer un `to_grid()` qui retourne un tableau 2D de `{"type": "grass|path|water|spawn|base"}`
-2. **Intégrer le `GameObject`** dans `events.py` : créer une vraie partie dans `on_player_ready`
-3. **Lancer la game loop** avec `eventlet.spawn` pour envoyer `game_state_update` à chaque tick
-
 ## Validation
 
 - ✅ `npm run build` → build OK (57 modules, 0 erreurs)
